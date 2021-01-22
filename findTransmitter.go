@@ -49,7 +49,13 @@ func handleFindTransmitter(req events.APIGatewayProxyRequest) (events.APIGateway
 		  }, nil
 	}
 
-	x, y := GetLocation(data.Satellite)
+	x, y, found := GetLocation(data.Satellite)
+	if !found {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusNotFound,
+			Body: string(""),
+		  }, nil
+	}
 	msg := GetMessage(data.Satellite)
 
 	response := DataResponse{Location{X:x, Y:y},msg}
