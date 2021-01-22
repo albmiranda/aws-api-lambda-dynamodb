@@ -72,7 +72,7 @@ func MatchesBetweenArrays(satellites [3][]Point) (point []Point) {
 }
 
 
-func GetLocation(satellites []SatelliteRequest) (x float32, y float32, found bool) {
+func GetLocation(satellites []SatelliteData) (x float32, y float32, found bool) {
 
 	// Populate circles with Point (Loccation) and Radius (Distances)
 	circle := [3]Circle{}

@@ -50,7 +50,7 @@ func deleteDuplicatedWord(words []string) []string {
 }
 
 
-func GetMessage(satellites []SatelliteRequest) string {
+func GetMessage(satellites []SatelliteData) string {
 	var index = []int {0,0,0,}
 	var message = []string {}
 
