@@ -9,10 +9,10 @@ import (
 
 
 type DataRequest struct {
-	Satellite []SatelliteRequest `json:"satellites"`
+	Satellite []SatelliteData `json:"satellites"`
 }
 
-type SatelliteRequest struct {
+type SatelliteData struct {
 	Name string `json:"name"`
 	Distance float32 `json:"distance"`
 	Message []string `json:"message"`
@@ -38,7 +38,7 @@ var satellitesLocation = map[string]Location {
 func handleFindTransmitter(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	data := DataRequest{
-		Satellite: []SatelliteRequest{},
+		Satellite: []SatelliteData{},
 	}
 	
 	err := json.Unmarshal([]byte(req.Body), &data)
@@ -47,6 +47,17 @@ func handleFindTransmitter(req events.APIGatewayProxyRequest) (events.APIGateway
 			StatusCode: http.StatusBadRequest,
 			Body: string("Failure to open request"),
 		  }, nil
+	}
+
+	// update dynamodb
+	for i := range data.Satellite {
+		err := CreateSatellite(data.Satellite[i])
+		if err != nil {
+			return events.APIGatewayProxyResponse{
+				StatusCode: http.StatusBadRequest,
+				Body: string("Failure to open request"),
+			  }, nil
+		}
 	}
 
 	x, y, found := GetLocation(data.Satellite)
