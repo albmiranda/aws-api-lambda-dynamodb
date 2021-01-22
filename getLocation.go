@@ -72,7 +72,7 @@ func MatchesBetweenArrays(satellites [3][]Point) (point []Point) {
 }
 
 
-func GetLocation(satellites []SatelliteRequest) (x, y float32) {
+func GetLocation(satellites []SatelliteRequest) (x float32, y float32, found bool) {
 
 	// Populate circles with Point (Loccation) and Radius (Distances)
 	circle := [3]Circle{}
@@ -90,9 +90,16 @@ func GetLocation(satellites []SatelliteRequest) (x, y float32) {
 				  						  &circle[(index+1) % len(intersecBetweenTwoCircles)])
 	}
 
-	// Find common value between all inntersections
+	// Find common value between all inntersections otherwise return 
 	var p []Point = MatchesBetweenArrays(intersecBetweenTwoCircles)
+	if len(p) == 0 {
+		x = 0
+		y = 0
+	} else {
+		found = true
+		x = float32(p[0].X)
+		y = float32(p[0].Y)
+	}
 
-
-	return float32(p[0].X), float32(p[0].Y)
+	return x,y,found
 }
