@@ -26,6 +26,12 @@ func handlers(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
     }
   }
 
+  if req.Resource == "/topsecret_split" {
+    if req.HTTPMethod == "GET" {
+      return handlerGetEnemyPosition(req)
+    }
+  }
+
   return events.APIGatewayProxyResponse{
     StatusCode: http.StatusMethodNotAllowed,
     Body:       http.StatusText(http.StatusMethodNotAllowed),
