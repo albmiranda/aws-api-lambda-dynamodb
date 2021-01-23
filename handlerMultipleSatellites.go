@@ -7,35 +7,11 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+func handlerMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-type DataRequest struct {
-	Satellite []SatelliteData `json:"satellites"`
-}
-
-type SatelliteData struct {
-	Name string `json:"name"`
-	Distance float32 `json:"distance"`
-	Message []string `json:"message"`
-}
-
-type DataResponse struct {
-	Location Location `json:"position"`
-	Message string `json:"messaje"`
-}
-
-type Location struct {
-	X float32 `json:"x"`
-	Y float32 `json:"y"`
-}
-
-var satellitesLocation = map[string]Location {
-	"kenobi": Location{-500.0, -200.0},
-	"skywalker": Location{100.0, -100.0},
-	"sato": Location{500.0, 100.0},
-}
-
-
-func handleFindTransmitter(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	type DataRequest struct {
+		Satellite []SatelliteData `json:"satellites"`
+	}
 
 	data := DataRequest{
 		Satellite: []SatelliteData{},

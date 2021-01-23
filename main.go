@@ -7,11 +7,28 @@ import (
   "github.com/aws/aws-lambda-go/lambda"
 )
 
+type DataResponse struct {
+  Location Location `json:"position"`
+  Message string `json:"messaje"`
+}
+
 func handlers(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
   if req.Path == "/topsecret" {
     if req.HTTPMethod == "POST" {
-      return handleFindTransmitter(req)
+      return handlerMultipleSatellites(req)
+    }
+  }
+
+  if req.Resource == "/topsecret_split/{name}" {
+    if req.HTTPMethod == "POST" {
+      return handlerSingleSatellite(req)
+    }
+  }
+
+  if req.Resource == "/topsecret_split" {
+    if req.HTTPMethod == "GET" {
+      return handlerGetEnemyPosition(req)
     }
   }
 
