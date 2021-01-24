@@ -24,26 +24,17 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 	data := DataRequest{}
 	err := json.Unmarshal([]byte(req.Body), &data)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to open request"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	v := validate.Struct(data)
 	if ! v.Validate() {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to open request - required field"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	name, found := req.PathParameters["name"]
 	if !found || (name != "sato" && name != "skywalker" && name != "kenobi") {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to open path parameter"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	var s = satellite.Data{
@@ -53,26 +44,17 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 	}
 	err = db.UpdateSingleSatellite(s)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to update database"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	satellites, err := db.GetAllSatellites()
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to read database"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	x, y, decryptedMessage, err := satellite.FindShip(satellites)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusNotFound,
-			Body:       string(""),
-		}, nil
+		return internalHttp.ClientError(http.StatusNotFound)
 	}
 
 	r := &internalHttp.DataResponse{
@@ -81,10 +63,7 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 	}
 	response, err := json.Marshal(r)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to create response"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	return events.APIGatewayProxyResponse{

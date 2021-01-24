@@ -17,18 +17,12 @@ func GetShipData(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	s, err := db.GetAllSatellites()
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure read database"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	x, y, decryptedMessage, err := satellite.FindShip(s)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusNotFound,
-			Body:       string(""),
-		}, nil
+		return internalHttp.ClientError(http.StatusNotFound)
 	}
 
 	r := &internalHttp.DataResponse{
@@ -37,10 +31,7 @@ func GetShipData(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 	response, err := json.Marshal(r)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to create response"),
-		}, nil
+		return internalHttp.ClientError(http.StatusInternalServerError)
 	}
 
 	return events.APIGatewayProxyResponse{

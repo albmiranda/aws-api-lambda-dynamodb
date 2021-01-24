@@ -20,39 +20,25 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 		Satellite []satellite.Data `json:"satellites" validate:"required"`
 	}
 
-	data := DataRequest{
-		Satellite: []satellite.Data{},
-	}
-	err := json.Unmarshal([]byte(req.Body), &data)
+	data := new(DataRequest)
+	err := json.Unmarshal([]byte(req.Body), data)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to open request"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	v := validate.Struct(data)
 	if ! v.Validate() {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to open request - required field"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	err = db.UpdateMultipleSatellites(data.Satellite)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to update database"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	x, y, decryptedMessage, err := satellite.FindShip(data.Satellite)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusNotFound,
-			Body:       string(""),
-		}, nil
+		return internalHttp.ClientError(http.StatusNotFound)
 	}
 
 	r := &internalHttp.DataResponse{
@@ -61,10 +47,7 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 	}
 	response, err := json.Marshal(r)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       string("Failure to create response"),
-		}, nil
+		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
 	return events.APIGatewayProxyResponse{
