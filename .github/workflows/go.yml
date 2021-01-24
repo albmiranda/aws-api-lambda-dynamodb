@@ -33,9 +33,12 @@ jobs:
         go get -u github.com/aws/aws-sdk-go/service/dynamodb
         go get -u github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute
 
-    - name: Validate (golint, gofmt, govet)
-      run: make validate
-      
+    - name: Lint
+      run: make lint
+
+    - name: Check Formatter
+      run: make fmt
+
     - name: Build
       run: make build
 
