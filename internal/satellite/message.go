@@ -5,12 +5,21 @@ import (
 	"strings"
 )
 
-func deleteElementFromArray(array []string, index int) []string {
-	return append(array[:index], array[index+1:]...)
+func deleteElementFromArray(array []string, index int) (res []string) {
+	if len(array) == 0 {
+		return array
+	}
+	res = append(array[:index], array[index+1:]...)
+	return
 }
 
 func deleteEmptyWord(words []string) []string {
 	var res []string
+
+	if len(words) == 0 {
+		return words
+	}
+
 	for _, str := range words {
 		if str != "" {
 			res = append(res, str)
