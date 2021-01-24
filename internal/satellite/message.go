@@ -1,4 +1,4 @@
-package main
+package satellite
 
 import (
 	"strings"
@@ -9,13 +9,13 @@ func deleteElementFromArray(array []string, index int) []string {
 }
 
 func deleteEmptyWord(words []string) []string {
-    var res []string
-    for _, str := range words {
-        if str != "" {
-            res = append(res, str)
-        }
-    }
-    return res
+	var res []string
+	for _, str := range words {
+		if str != "" {
+			res = append(res, str)
+		}
+	}
+	return res
 }
 
 func deletePreviousWord(words []string, partialMessage []string) ([]string, bool, []int) {
@@ -23,7 +23,7 @@ func deletePreviousWord(words []string, partialMessage []string) ([]string, bool
 	var deleted = false
 
 	if len(partialMessage) == 0 {
-		return words,deleted,positions
+		return words, deleted, positions
 	}
 
 	for index := 0; index < len(words); index++ {
@@ -38,35 +38,35 @@ func deletePreviousWord(words []string, partialMessage []string) ([]string, bool
 }
 
 func deleteDuplicatedWord(words []string) []string {
-    keys := make(map[string]bool)
-    list := []string{}	
-    for _, entry := range words {
-        if _, value := keys[entry]; !value {
-            keys[entry] = true
-            list = append(list, entry)
-        }
-    }    
-    return list
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range words {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
 
-
-func GetMessage(satellites []SatelliteData) string {
-	var index = []int {0,0,0,}
-	var message = []string {}
+// GetMessage TODO: adicionar comentario
+func GetMessage(satellites []Data) string {
+	var index = []int{0, 0, 0}
+	var message = []string{}
 
 	for true {
-		var candidateWord = []string {}
+		var candidateWord = []string{}
 
-		for i:=0; i < len(index); i++ {
+		for i := 0; i < len(index); i++ {
 			if index[i] < len(satellites[i].Message) {
-				candidateWord = append(candidateWord, satellites[i].Message[index[i]])	
+				candidateWord = append(candidateWord, satellites[i].Message[index[i]])
 			}
 		}
 
 		if len(candidateWord) == 0 {
 			break
 		}
-	
+
 		candidateWord, deleted, positions := deletePreviousWord(candidateWord, message)
 		if deleted {
 			for _, p := range positions {
@@ -74,7 +74,7 @@ func GetMessage(satellites []SatelliteData) string {
 			}
 			continue
 		}
- 		candidateWord = deleteEmptyWord(candidateWord)
+		candidateWord = deleteEmptyWord(candidateWord)
 		candidateWord = deleteDuplicatedWord(candidateWord)
 
 		if len(candidateWord) == 1 {
