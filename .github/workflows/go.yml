@@ -1,0 +1,43 @@
+name: Go
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+        go get -u github.com/aws/aws-lambda-go/events
+        go get -u github.com/aws/aws-lambda-go/lambda
+        go get -u github.com/gookit/validate
+        go get -u github.com/aws/aws-sdk-go/aws
+        go get -u github.com/aws/aws-sdk-go/aws/session
+        go get -u github.com/aws/aws-sdk-go/service/dynamodb
+        go get -u github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute
+
+    - name: Validate (golint, gofmt, govet)
+      run: make validate
+      
+    - name: Build
+      run: make build
+
+    - name: Test
+      run: make test
