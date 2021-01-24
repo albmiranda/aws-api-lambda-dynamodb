@@ -2,9 +2,9 @@
 package handler
 
 import (
-	"go-meli/internal/satellite"
 	"go-meli/internal/db"
 	internalHttp "go-meli/internal/http"
+	"go-meli/internal/satellite"
 
 	"encoding/json"
 	"net/http"
@@ -28,7 +28,7 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 	}
 
 	v := validate.Struct(data)
-	if ! v.Validate() {
+	if !v.Validate() {
 		return internalHttp.ClientError(http.StatusBadRequest)
 	}
 
@@ -59,7 +59,7 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 
 	r := &internalHttp.DataResponse{
 		Location: satellite.Location{X: x, Y: y},
-		Message: decryptedMessage,
+		Message:  decryptedMessage,
 	}
 	response, err := json.Marshal(r)
 	if err != nil {
