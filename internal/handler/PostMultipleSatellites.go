@@ -1,9 +1,10 @@
+// Package handler manages a specific HTTP method
 package handler
 
 import (
 	"go-meli/internal/satellite"
 	"go-meli/internal/db"
-	localHttp "go-meli/pkg/http"
+	internalHttp "go-meli/internal/http"
 
 	"encoding/json"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 	"github.com/gookit/validate"
 )
 
-// PostMultipleSatellites TODO: adicionar comentario
+// PostMultipleSatellites receives all satellite data at once, updates then on database and tries to find the ship.
 func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	type DataRequest struct {
@@ -22,7 +23,6 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 	data := DataRequest{
 		Satellite: []satellite.Data{},
 	}
-
 	err := json.Unmarshal([]byte(req.Body), &data)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -39,7 +39,6 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 		}, nil
 	}
 
-	// update db
 	err = db.UpdateMultipleSatellites(data.Satellite)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -48,17 +47,19 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 		}, nil
 	}
 
-	x, y, found := satellite.GetLocation(data.Satellite)
-	if !found {
+	x, y, decryptedMessage, err := satellite.FindShip(data.Satellite)
+	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusNotFound,
 			Body:       string(""),
 		}, nil
 	}
-	msg := satellite.GetMessage(data.Satellite)
 
-	response := localHttp.DataResponse{satellite.Location{X: x, Y: y}, msg}
-	responseJSON, err := json.Marshal(&response)
+	r := &internalHttp.DataResponse{
+		Location: satellite.Location{X: x, Y: y},
+		Message: decryptedMessage,
+	}
+	response, err := json.Marshal(r)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
@@ -68,6 +69,6 @@ func PostMultipleSatellites(req events.APIGatewayProxyRequest) (events.APIGatewa
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
-		Body:       string(responseJSON),
+		Body:       string(response),
 	}, nil
 }

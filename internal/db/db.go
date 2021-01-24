@@ -1,3 +1,4 @@
+// Package db which allows GET and PUT item (satellite.Data) into a database
 package db
 
 import (
@@ -5,7 +6,7 @@ import (
 	database "go-meli/pkg/dynamodb"
 )
 
-// GetAllSatellites TODO: adicionar comentario
+// GetAllSatellites retrieves all item (satellite.Data) stored in database
 func GetAllSatellites() ([]satellite.Data, error) {
 	var data, err = database.Scan()
 	if err != nil {
@@ -21,7 +22,7 @@ func GetAllSatellites() ([]satellite.Data, error) {
 	return s, err
 }
 
-// UpdateSingleSatellite TODO: adicionar comentario
+// UpdateSingleSatellite updates a item (satellite.Data) of database
 func UpdateSingleSatellite(satellite satellite.Data) error {
 	var data, err = database.NewItem(satellite)
 	if err != nil {
@@ -33,9 +34,8 @@ func UpdateSingleSatellite(satellite satellite.Data) error {
 }
 
 
-// UpdateMultipleSatellites TODO: adicionar comentario
+// UpdateMultipleSatellites updates all available itens (satellite.Data) of database
 func UpdateMultipleSatellites(satellites []satellite.Data) error {
-
 	for _, s := range satellites {
 		err := UpdateSingleSatellite(s)
 		if err != nil {

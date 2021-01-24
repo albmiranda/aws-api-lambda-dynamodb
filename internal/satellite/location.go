@@ -1,3 +1,4 @@
+// Package satellite stores struct and methods which handle satellites information
 package satellite
 
 import (
@@ -70,10 +71,10 @@ func matchesBetweenArrays(satellites [3][]point) (p []point) {
 	return
 }
 
-// GetLocation TODO: adicionar comentario
+// GetLocation receives data from all satellites and tries to find ship position
 func GetLocation(satellites []Data) (x float32, y float32, found bool) {
 
-	// Populate circles with point (Loccation) and Radius (Distances)
+	// Populate circles with point (Location) and Radius (Distances)
 	circle := [3]circle{}
 	for index := 0; index < len(satellites); index++ {
 		var key string = satellites[index].Name

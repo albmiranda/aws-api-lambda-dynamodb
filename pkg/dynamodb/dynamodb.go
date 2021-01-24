@@ -1,3 +1,4 @@
+// Package dynamodb exports methods to retrive and save itens from/to a DynamoDB database
 package dynamodb
 
 import (
@@ -14,7 +15,7 @@ const tableName = "go-transmitter"
 
 var db = dynamodb.New(session.New(), aws.NewConfig().WithRegion(awsRegion))
 
-// Scan TODO: adicionar comentario
+// Scan retrieves the table items as json-like format from a DynamoDB database
 func Scan() (*dynamodb.ScanOutput, error) {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(tableName),
@@ -24,7 +25,7 @@ func Scan() (*dynamodb.ScanOutput, error) {
 	return result, err
 }
 
-// GetItemSatellite TODO: adicionar comentario
+// GetItemSatellite returns all item (satellite.Data) stored in DynamoDB database
 func GetItemSatellite(data *dynamodb.ScanOutput) ([]satellite.Data, error) {
 	var satellites []satellite.Data
 
@@ -36,7 +37,7 @@ func GetItemSatellite(data *dynamodb.ScanOutput) ([]satellite.Data, error) {
 	return satellites, nil
 }
 
-// NewItem TODO: adicionar comentario
+// NewItem creates a new item as json-like to be stored in DynamoDB database
 func NewItem(in interface{}) (*dynamodb.PutItemInput, error) {
 	item, err := dynamodbattribute.MarshalMap(in)
 	if err != nil {
@@ -51,7 +52,7 @@ func NewItem(in interface{}) (*dynamodb.PutItemInput, error) {
 	return input, nil
 }
 
-// PutItem TODO: adicionar comentario
+// PutItem inserts/updates an item in DynamoDB database
 func PutItem(in *dynamodb.PutItemInput) error {
 	_, err := db.PutItem(in)
 	return err

@@ -1,9 +1,10 @@
+// Package handler manages a specific HTTP method
 package handler
 
 import (
 	"go-meli/internal/db"
 	"go-meli/internal/satellite"
-	localHttp "go-meli/pkg/http"
+	internalHttp "go-meli/internal/http"
 
 	"encoding/json"
 	"net/http"
@@ -11,11 +12,10 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-// GetEnemyPosition TODO: adicionar comentario
-func GetEnemyPosition(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+// GetShipData gets the ship position and decrypts the message received by satellites
+func GetShipData(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	// read all satellites from dynamodb
-	satellites, err := db.GetAllSatellites()
+	s, err := db.GetAllSatellites()
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
@@ -23,17 +23,19 @@ func GetEnemyPosition(req events.APIGatewayProxyRequest) (events.APIGatewayProxy
 		}, nil
 	}
 
-	msg := satellite.GetMessage(satellites)
-	x, y, found := satellite.GetLocation(satellites)
-	if !found {
+	x, y, decryptedMessage, err := satellite.FindShip(s)
+	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusNotFound,
 			Body:       string(""),
 		}, nil
 	}
 
-	response := localHttp.DataResponse{satellite.Location{X: x, Y: y}, msg}
-	responseJSON, err := json.Marshal(&response)
+	r := &internalHttp.DataResponse{
+		Location: satellite.Location{X: x, Y: y},
+		Message: decryptedMessage,
+	}
+	response, err := json.Marshal(r)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
@@ -43,6 +45,6 @@ func GetEnemyPosition(req events.APIGatewayProxyRequest) (events.APIGatewayProxy
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
-		Body:       string(responseJSON),
+		Body:       string(response),
 	}, nil
 }

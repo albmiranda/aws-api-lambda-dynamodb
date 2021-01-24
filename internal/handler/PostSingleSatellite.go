@@ -1,9 +1,10 @@
+// Package handler manages a specific HTTP method
 package handler
 
 import (
 	"go-meli/internal/satellite"
 	"go-meli/internal/db"
-	localHttp "go-meli/pkg/http"
+	internalHttp "go-meli/internal/http"
 
 	"encoding/json"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 	"github.com/gookit/validate"
 )
 
-// PostSingleSatellite TODO: adicionar comentario
+// PostSingleSatellite receives a single satellite data, updates it on database and tries to find the ship.
 func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	type DataRequest struct {
@@ -37,7 +38,6 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 		}, nil
 	}
 
-	// read query parameter
 	name, found := req.PathParameters["name"]
 	if !found || (name != "sato" && name != "skywalker" && name != "kenobi") {
 		return events.APIGatewayProxyResponse{
@@ -46,14 +46,12 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 		}, nil
 	}
 
-	var sat = satellite.Data{
+	var s = satellite.Data{
 		Name:     name,
 		Distance: data.Distance,
 		Message:  data.Message,
 	}
-
-	// update db
-	err = db.UpdateSingleSatellite(sat)
+	err = db.UpdateSingleSatellite(s)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
@@ -61,7 +59,6 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 		}, nil
 	}
 
-	// read all satellites from dynamodb
 	satellites, err := db.GetAllSatellites()
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -70,17 +67,19 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 		}, nil
 	}
 
-	x, y, found := satellite.GetLocation(satellites)
-	if !found {
+	x, y, decryptedMessage, err := satellite.FindShip(satellites)
+	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusNotFound,
 			Body:       string(""),
 		}, nil
 	}
-	msg := satellite.GetMessage(satellites)
 
-	response := localHttp.DataResponse{satellite.Location{X: x, Y: y}, msg}
-	responseJSON, err := json.Marshal(&response)
+	r := &internalHttp.DataResponse{
+		Location: satellite.Location{X: x, Y: y},
+		Message: decryptedMessage,
+	}
+	response, err := json.Marshal(r)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
@@ -90,6 +89,6 @@ func PostSingleSatellite(req events.APIGatewayProxyRequest) (events.APIGatewayPr
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
-		Body:       string(responseJSON),
+		Body:       string(response),
 	}, nil
 }
