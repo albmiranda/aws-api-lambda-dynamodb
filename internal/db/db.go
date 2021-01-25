@@ -33,7 +33,6 @@ func UpdateSingleSatellite(satellite satellite.Data) error {
 	return err
 }
 
-
 // UpdateMultipleSatellites updates all available itens (satellite.Data) of database
 func UpdateMultipleSatellites(satellites []satellite.Data) error {
 	for _, s := range satellites {

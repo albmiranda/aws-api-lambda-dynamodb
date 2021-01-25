@@ -65,7 +65,7 @@ func TestCalculateThreeCircleIntersection(t *testing.T) {
 		t.Errorf("Failure to calculate intersection between 3 circles - err")
 	}
 
-	expect := point{-40,40}
+	expect := point{-40, 40}
 	if p != expect {
 		t.Errorf("Failure to calculate intersection between 3 circles - point")
 	}
