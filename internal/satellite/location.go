@@ -77,8 +77,6 @@ func calculateThreeCircleIntersection(c [3]circle) (point, error) {
 	intersectionPoint1y := toFixed(point2y+ry, 3)
 	intersectionPoint2y := toFixed(point2y-ry, 3)
 
-	// fmt.Println("INTERSECTION Circle1 AND Circle2: (", intersectionPoint1x, ",", intersectionPoint1y, ")", " AND (", intersectionPoint2x, ",", intersectionPoint2y, ")")
-
 	/* Lets determine if circle 3 intersects at either of the above intersection points. */
 	dx = intersectionPoint1x - c[2].point.X
 	dy = intersectionPoint1y - c[2].point.Y
