@@ -25,7 +25,7 @@ func toFixed(num float64, precision int) float64 {
 	return float64(round(num*output)) / output
 }
 
-func calculateThreeCircleIntersection(c [3]circle) (point, error) {
+func findIntersectionBetweenThreeCircles(c [3]circle) (point, error) {
 
 	p := point{}
 
@@ -116,7 +116,7 @@ func GetLocation(satellites []Data) (x float32, y float32, found bool) {
 		circles[index].R = float64(satellites[index].Distance)
 	}
 
-	p, err := calculateThreeCircleIntersection(circles)
+	p, err := findIntersectionBetweenThreeCircles(circles)
 	if err != nil {
 		return 0, 0, false
 	}

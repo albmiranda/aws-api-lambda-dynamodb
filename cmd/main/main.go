@@ -11,7 +11,7 @@ import (
 
 func handlers(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	if req.Path == "/topsecrkjkjet" {
+	if req.Path == "/topsecret" {
 		if req.HTTPMethod == "POST" {
 			return handler.PostMultipleSatellites(req)
 		}

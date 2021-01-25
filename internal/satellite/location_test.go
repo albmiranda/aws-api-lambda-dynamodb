@@ -30,11 +30,11 @@ func TestToFixed(t *testing.T) {
 	}
 }
 
-func TestCalculateThreeCircleIntersection_lessThanThreeCircles(t *testing.T) {
+func TestFindIntersectionBetweenThreeCircles_lessThanThreeCircles(t *testing.T) {
 	// the method contract doesn't allow less than 3 cirlces as input
 }
 
-func TestCalculateThreeCircleIntersection(t *testing.T) {
+func TestFindIntersectionBetweenThreeCircles(t *testing.T) {
 	c := [3]circle{
 		{
 			point: point{
@@ -59,13 +59,13 @@ func TestCalculateThreeCircleIntersection(t *testing.T) {
 		},
 	}
 
-	p, err := calculateThreeCircleIntersection(c)
+	p, err := findIntersectionBetweenThreeCircles(c)
 
 	if err != nil {
 		t.Errorf("Failure to calculate intersection between 3 circles - err")
 	}
 
-	expect := point{-40,40}
+	expect := point{-40, 40}
 	if p != expect {
 		t.Errorf("Failure to calculate intersection between 3 circles - point")
 	}
