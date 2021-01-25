@@ -11,20 +11,23 @@ SRCS_LIST=$(shell find $(SRCDIR) -name "*.go")
 
 all: clean build test
 
-build:	## Build main application and compress its binary file into a zip file
+build:	## Build main application
 	@echo "\nBuilding GO project"
 	$(GOCMD) build $(BINARY_SRCDIR)
-	zip $(BINARY).zip $(BINARY)
 
 test: ## Run unit test and code coverage
 	@echo "\nTest and coverage"
 	$(GOCMD) test -coverpkg=./... -coverprofile=profile.cov ./...
+	@echo "\n"
 	$(GOCMD) tool cover -func profile.cov
 
 clean:	## Clean generated artifacts
 	@echo "\nCleaning"
 	$(GOCMD) clean
 	-rm -f $(BINARY) $(BINARY).zip profile.cov
+
+package: ${BINARY}	## Generate binary application as .zip artifact to be used on AWS Lambda
+	zip $(BINARY).zip $(BINARY)
 
 lint:	## Run golint to check style mistakes
 	@echo "\nRunning golint c"
@@ -41,4 +44,4 @@ vet:	## Examines the code and reports suspicious constructs
 help:	## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-13s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: all build clean test lint fmt vet help
+.PHONY: all build clean test package lint fmt vet help
