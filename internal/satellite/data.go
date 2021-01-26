@@ -1,4 +1,3 @@
-
 // Package satellite stores struct and methods which handle satellites information
 package satellite
 

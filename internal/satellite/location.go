@@ -25,7 +25,7 @@ func toFixed(num float64, precision int) float64 {
 	return float64(round(num*output)) / output
 }
 
-func calculateThreeCircleIntersection(c [3]circle) (point, error) {
+func findIntersectionBetweenThreeCircles(c [3]circle) (point, error) {
 
 	p := point{}
 
@@ -77,8 +77,6 @@ func calculateThreeCircleIntersection(c [3]circle) (point, error) {
 	intersectionPoint1y := toFixed(point2y+ry, 3)
 	intersectionPoint2y := toFixed(point2y-ry, 3)
 
-	// fmt.Println("INTERSECTION Circle1 AND Circle2: (", intersectionPoint1x, ",", intersectionPoint1y, ")", " AND (", intersectionPoint2x, ",", intersectionPoint2y, ")")
-
 	/* Lets determine if circle 3 intersects at either of the above intersection points. */
 	dx = intersectionPoint1x - c[2].point.X
 	dy = intersectionPoint1y - c[2].point.Y
@@ -118,7 +116,7 @@ func GetLocation(satellites []Data) (x float32, y float32, found bool) {
 		circles[index].R = float64(satellites[index].Distance)
 	}
 
-	p, err := calculateThreeCircleIntersection(circles)
+	p, err := findIntersectionBetweenThreeCircles(circles)
 	if err != nil {
 		return 0, 0, false
 	}
