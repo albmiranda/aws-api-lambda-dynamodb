@@ -1,6 +1,6 @@
 # Operação Fogo de Quaser
 
-Este projeto é a resolução em golang de um caso técnico proposto pelo MELI.
+Este projeto é estudo de utilização de API GATEWAY, LAMBDA e DYNAMODB da AWS.
 
 A cloud computing adotada foi a Amazon AWS devido prévia familiaridade do desenvolvedor com a plataforma.
 Para gerenciar o recebimento das chamadas de API foi utilizado o serviço **API GATEWAY** da AWS que, além do gerencimanento das chamadas, oferece maior segurança em eventual controle de autorização, etc.
@@ -37,7 +37,7 @@ A fim de possibilitar o empacotamento do binário em pacote compatível com AWS 
 
 Para mais ajuda com o Makefile digite "make help":
 ```
-andre@laptop:~/go/src/go-meli$ make help
+andre@laptop:~/go/src/aws-api-lambda-dynamodb$ make help
 build         Build main application 
 test          Run unit test and code coverage
 clean         Clean generated artifacts
@@ -90,42 +90,42 @@ make test
 
 Exemplo de saída:
 ```
-andre@laptop:~/go/src/go-meli$ make test
+andre@laptop:~/go/src/aws-api-lambda-dynamodb$ make test
 
 Test and coverage
 go test -coverpkg=./... -coverprofile=profile.cov ./...
-?   	go-meli/cmd/main	[no test files]
-?   	go-meli/internal/db	[no test files]
-?   	go-meli/internal/handler	[no test files]
-?   	go-meli/internal/http	[no test files]
-ok  	go-meli/internal/satellite	0.015s	
+?   	aws-api-lambda-dynamodb/cmd/main	[no test files]
+?   	aws-api-lambda-dynamodb/internal/db	[no test files]
+?   	aws-api-lambda-dynamodb/internal/handler	[no test files]
+?   	aws-api-lambda-dynamodb/internal/http	[no test files]
+ok  	aws-api-lambda-dynamodb/internal/satellite	0.015s	
 
 coverage: 19.1% of statements in ./...
-?   	go-meli/pkg/dynamodb	[no test files]
+?   	aws-api-lambda-dynamodb/pkg/dynamodb	[no test files]
 go tool cover -func profile.cov
-go-meli/cmd/main/main.go:12:				handlers				0.0%
-go-meli/cmd/main/main.go:38:				main					0.0%
-go-meli/internal/db/db.go:10:				GetAllSatellites			0.0%
-go-meli/internal/db/db.go:26:				UpdateSingleSatellite			0.0%
-go-meli/internal/db/db.go:38:				UpdateMultipleSatellites		0.0%
-go-meli/internal/handler/GetShipData.go:16:		GetShipData				0.0%
-go-meli/internal/handler/PostMultipleSatellites.go:17:	PostMultipleSatellites			0.0%
-go-meli/internal/handler/PostSingleSatellite.go:17:	PostSingleSatellite			0.0%
-go-meli/internal/http/http.go:19:			ClientError				0.0%
-go-meli/internal/satellite/findShip.go:9:		FindShip				0.0%
-go-meli/internal/satellite/location.go:19:		round					100.0%
-go-meli/internal/satellite/location.go:23:		toFixed					100.0%
-go-meli/internal/satellite/location.go:28:		calculateThreeCircleIntersection	75.8%
-go-meli/internal/satellite/location.go:108:		GetLocation				0.0%
-go-meli/internal/satellite/message.go:8:		deleteElementFromArray			100.0%
-go-meli/internal/satellite/message.go:16:		deleteEmptyWord				100.0%
-go-meli/internal/satellite/message.go:31:		deletePreviousWord			0.0%
-go-meli/internal/satellite/message.go:50:		deleteDuplicatedWord			0.0%
-go-meli/internal/satellite/message.go:63:		GetMessage				0.0%
-go-meli/pkg/dynamodb/dynamodb.go:19:			Scan					0.0%
-go-meli/pkg/dynamodb/dynamodb.go:29:			GetItemSatellite			0.0%
-go-meli/pkg/dynamodb/dynamodb.go:41:			NewItem					0.0%
-go-meli/pkg/dynamodb/dynamodb.go:56:			PutItem					0.0%
+aws-api-lambda-dynamodb/cmd/main/main.go:12:				handlers				0.0%
+aws-api-lambda-dynamodb/cmd/main/main.go:38:				main					0.0%
+aws-api-lambda-dynamodb/internal/db/db.go:10:				GetAllSatellites			0.0%
+aws-api-lambda-dynamodb/internal/db/db.go:26:				UpdateSingleSatellite			0.0%
+aws-api-lambda-dynamodb/internal/db/db.go:38:				UpdateMultipleSatellites		0.0%
+aws-api-lambda-dynamodb/internal/handler/GetShipData.go:16:		GetShipData				0.0%
+aws-api-lambda-dynamodb/internal/handler/PostMultipleSatellites.go:17:	PostMultipleSatellites			0.0%
+aws-api-lambda-dynamodb/internal/handler/PostSingleSatellite.go:17:	PostSingleSatellite			0.0%
+aws-api-lambda-dynamodb/internal/http/http.go:19:			ClientError				0.0%
+aws-api-lambda-dynamodb/internal/satellite/findShip.go:9:		FindShip				0.0%
+aws-api-lambda-dynamodb/internal/satellite/location.go:19:		round					100.0%
+aws-api-lambda-dynamodb/internal/satellite/location.go:23:		toFixed					100.0%
+aws-api-lambda-dynamodb/internal/satellite/location.go:28:		calculateThreeCircleIntersection	75.8%
+aws-api-lambda-dynamodb/internal/satellite/location.go:108:		GetLocation				0.0%
+aws-api-lambda-dynamodb/internal/satellite/message.go:8:		deleteElementFromArray			100.0%
+aws-api-lambda-dynamodb/internal/satellite/message.go:16:		deleteEmptyWord				100.0%
+aws-api-lambda-dynamodb/internal/satellite/message.go:31:		deletePreviousWord			0.0%
+aws-api-lambda-dynamodb/internal/satellite/message.go:50:		deleteDuplicatedWord			0.0%
+aws-api-lambda-dynamodb/internal/satellite/message.go:63:		GetMessage				0.0%
+aws-api-lambda-dynamodb/pkg/dynamodb/dynamodb.go:19:			Scan					0.0%
+aws-api-lambda-dynamodb/pkg/dynamodb/dynamodb.go:29:			GetItemSatellite			0.0%
+aws-api-lambda-dynamodb/pkg/dynamodb/dynamodb.go:41:			NewItem					0.0%
+aws-api-lambda-dynamodb/pkg/dynamodb/dynamodb.go:56:			PutItem					0.0%
 total:							(statements)				19.1%
 ```
 
